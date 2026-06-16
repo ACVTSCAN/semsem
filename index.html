@@ -3498,7 +3498,7 @@ function buildBrevoCard(msg, idx) {
       prompt += " Choisir les 3 \u00e0 5 r\u00e9f\u00e9rences les plus pertinentes (proximit\u00e9 sectorielle, enjeux similaires).";
       prompt += " R\u00e9pondre UNIQUEMENT avec la phrase suivante r\u00e9\u00e9crite avec les bonnes r\u00e9f\u00e9rences en gras (**texte**), rien d'autre :";
       prompt += " Nous avons travaill\u00e9 aux c\u00f4t\u00e9s d'annonceurs tels que **[R\u00e9f1], [R\u00e9f2], [R\u00e9f3]** (et **[R\u00e9f4]** si pertinent), **et bien d'autres**.";
-      fetch("https://api.anthropic.com/v1/messages", {
+      fetch("https://damp-wind-7811.achaaraoui.workers.dev/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
