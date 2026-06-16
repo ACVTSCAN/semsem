@@ -4370,6 +4370,58 @@ function detectCivilite(prenom) {
   return 'Madame'; // default
 }
 
+function exportAllData() {
+  var data = {
+    version: 1,
+    date: new Date().toISOString(),
+    prospects: localStorage.getItem('vtscan_prospects'),
+    templates: localStorage.getItem('vtscan_templates'),
+    courrier_templates: localStorage.getItem('vtscan_courrier_templates'),
+    sms_templates: localStorage.getItem('vtscan_sms_templates'),
+    linkedin_templates: localStorage.getItem('vtscan_linkedin_templates'),
+    pipeline: localStorage.getItem('vtscan_pipeline'),
+    refs: localStorage.getItem('vtscan_refs'),
+    refs_subject: localStorage.getItem('vtscan_refs_subject'),
+    prompts: localStorage.getItem('vtscan_prompts'),
+    tool_prompt: localStorage.getItem('vtscan_tool_prompt'),
+    fm_stats: localStorage.getItem('vtscan_fm_stats')
+  };
+  var blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'semsem_backup_' + new Date().toISOString().slice(0,10) + '.json';
+  a.click();
+}
+
+function importAllData(input) {
+  var file = input.files[0];
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      var data = JSON.parse(e.target.result);
+      if (!data.version) { alert('Fichier invalide.'); return; }
+      if (!confirm('Importer les données ? Cela remplacera toutes vos données actuelles.')) return;
+      if (data.prospects) localStorage.setItem('vtscan_prospects', data.prospects);
+      if (data.templates) localStorage.setItem('vtscan_templates', data.templates);
+      if (data.courrier_templates) localStorage.setItem('vtscan_courrier_templates', data.courrier_templates);
+      if (data.sms_templates) localStorage.setItem('vtscan_sms_templates', data.sms_templates);
+      if (data.linkedin_templates) localStorage.setItem('vtscan_linkedin_templates', data.linkedin_templates);
+      if (data.pipeline) localStorage.setItem('vtscan_pipeline', data.pipeline);
+      if (data.refs) localStorage.setItem('vtscan_refs', data.refs);
+      if (data.refs_subject) localStorage.setItem('vtscan_refs_subject', data.refs_subject);
+      if (data.prompts) localStorage.setItem('vtscan_prompts', data.prompts);
+      if (data.tool_prompt) localStorage.setItem('vtscan_tool_prompt', data.tool_prompt);
+      if (data.fm_stats) localStorage.setItem('vtscan_fm_stats', data.fm_stats);
+      alert('Données importées ! La page va se recharger.');
+      location.reload();
+    } catch(err) {
+      alert('Erreur lors de l'import : ' + err.message);
+    }
+  };
+  reader.readAsText(file);
+}
+
 function deleteTodayProspects() {
   var todayProspects = prospects.filter(function(p){ return isToday(p.date); });
   if (!todayProspects.length) { alert('Aucun nouveau prospect aujourd\'hui.'); return; }
