@@ -3429,6 +3429,8 @@ function buildBrevoCard(msg, idx) {
     sectorLbl.style.cssText = 'font-size:12px;font-weight:600;color:var(--text-secondary);white-space:nowrap;flex-shrink:0;';
     sectorLbl.textContent = 'Secteur :';
     var sectorSel = document.createElement('select');
+    sectorSel.id = 'sector-sel-' + idx;
+    sectorSel.dataset.cardIdx = idx;
     sectorSel.style.cssText = 'flex:1;font-size:13px;border:1px solid var(--border);border-radius:6px;padding:5px 8px;background:#fff;color:var(--text-primary);font-family:inherit;cursor:pointer;';
     Object.keys(REFS).forEach(function(s) {
       var opt = document.createElement('option');
