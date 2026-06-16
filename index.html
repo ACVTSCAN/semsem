@@ -4407,23 +4407,17 @@ function importAllData(input) {
   reader.onload = function(e) {
     try {
       var data = JSON.parse(e.target.result);
-      if (!data.version) { alert('Fichier invalide.'); return; }
-      if (!confirm('Importer les données ? Cela remplacera toutes vos données actuelles.')) return;
-      if (data.prospects) localStorage.setItem('vtscan_prospects', data.prospects);
-      if (data.templates) localStorage.setItem('vtscan_templates', data.templates);
-      if (data.courrier_templates) localStorage.setItem('vtscan_courrier_templates', data.courrier_templates);
-      if (data.sms_templates) localStorage.setItem('vtscan_sms_templates', data.sms_templates);
-      if (data.linkedin_templates) localStorage.setItem('vtscan_linkedin_templates', data.linkedin_templates);
-      if (data.pipeline) localStorage.setItem('vtscan_pipeline', data.pipeline);
-      if (data.refs) localStorage.setItem('vtscan_refs', data.refs);
-      if (data.refs_subject) localStorage.setItem('vtscan_refs_subject', data.refs_subject);
-      if (data.prompts) localStorage.setItem('vtscan_prompts', data.prompts);
-      if (data.tool_prompt) localStorage.setItem('vtscan_tool_prompt', data.tool_prompt);
-      if (data.fm_stats) localStorage.setItem('vtscan_fm_stats', data.fm_stats);
-      alert('Données importées ! La page va se recharger.');
-      location.reload();
+      if (!confirm('Importer les données ? Cela remplacera vos données actuelles.')) return;
+      var count = 0;
+      var keys = ['prospects','templates','courrier_templates','sms_templates','linkedin_templates','pipeline','refs','refs_subject','prompts','tool_prompt','fm_stats'];
+      var lsKeys = ['vtscan_prospects','vtscan_templates','vtscan_courrier_templates','vtscan_sms_templates','vtscan_linkedin_templates','vtscan_pipeline','vtscan_refs','vtscan_refs_subject','vtscan_prompts','vtscan_tool_prompt','vtscan_fm_stats'];
+      keys.forEach(function(k, i) {
+        if (data[k]) { localStorage.setItem(lsKeys[i], data[k]); count++; }
+      });
+      alert(count + ' clés importées avec succès ! La page va se recharger.');
+      window.location.href = window.location.href;
     } catch(err) {
-      alert('Erreur lors de l\'import : ' + err.message);
+      alert('Erreur : ' + err.message);
     }
   };
   reader.readAsText(file);
