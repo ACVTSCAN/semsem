@@ -3498,7 +3498,7 @@ function buildBrevoCard(msg, idx) {
       prompt += " Ensuite, parmi nos r\u00e9f\u00e9rences clients suivantes, choisis les 3 \u00e0 5 les plus pertinentes :\n";
       Object.keys(REFS).forEach(function(k){ prompt += k + " : " + REFS[k].join(', ') + "\n"; });
       prompt += "\nR\u00e9ponds UNIQUEMENT avec ce JSON (une seule ligne, rien d'autre) :\n";
-      prompt += '{"phrase":"Nous avons travaill\u00e9 aux c\u00f4t\u00e9s d'annonceurs tels que **Ref1**, **Ref2**, **Ref3** (et **Ref4** si pertinent), **et bien d'autres**.","secteur":"Nom exact du secteur parmi ceux list\u00e9s ci-dessus"}';
+      prompt += "{\"phrase\":\"Nous avons travaill\u00e9 aux c\u00f4t\u00e9s d'annonceurs tels que **Ref1**, **Ref2**, **Ref3** (et **Ref4** si pertinent), **et bien d'autres**.\",\"secteur\":\"Nom exact du secteur parmi ceux list\u00e9s ci-dessus\"}";
       fetch("https://damp-wind-7811.achaaraoui.workers.dev/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
