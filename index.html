@@ -3511,22 +3511,62 @@ function buildBrevoCard(msg, idx) {
       .then(function(r){ return r.json(); })
       .then(function(data){
         ab.disabled = false; ab.innerHTML = '✨ IA Références';
-        var text = data.content && data.content[0] ? data.content[0].text : null;
-        if (!text) return;
-        // Extract refs from the phrase and update body
+        // Get raw text from API response
+        var rawText = '';
+        if (data.content) {
+          data.content.forEach(function(b){ if (b.type === 'text') rawText += b.text; });
+        }
+        if (!rawText) return;
+        // Parse JSON - extract phrase and secteur
+        var phrase = null;
+        var secteur = null;
+        try {
+          var clean = rawText.replace(/```json\s*/g,'').replace(/```/g,'').trim();
+          var s = clean.indexOf('{');
+          var e = clean.lastIndexOf('}');
+          if (s !== -1 && e !== -1) {
+            var obj = JSON.parse(clean.substring(s, e+1));
+            phrase = obj.phrase || null;
+            secteur = obj.secteur || null;
+          }
+        } catch(ex) { phrase = rawText.trim(); }
+        if (!phrase) return;
+        // Update body - replace refs sentence
         var bodyDiv = document.getElementById('brevo-body-' + i);
         var currentBody = brevoGenerated[i].body || '';
-        // Replace the refs line in the body
         var newBody = currentBody.replace(
-          /Nous avons travaillé aux côtés d['']annonceurs tels que[^.]+\./,
-          text.replace(/^[""]|[""]$/g, '').trim()
+          /Nous avons travaill[eé][^\n]+/,
+          phrase
         );
-        if (newBody === currentBody) {
-          // If no match, append as note
-          newBody = currentBody + '\\n\\n[R\u00e9f\u00e9rences sugg\u00e9r\u00e9es par IA : ' + text + ']';
-        }
+        if (newBody === currentBody) newBody = currentBody; // keep as is if no match
         brevoGenerated[i].body = newBody;
         if (bodyDiv) { bodyDiv.innerHTML = renderBold(newBody); bodyDiv.dataset.body = newBody; }
+        // Update subject
+        var refM = phrase.match(/\*\*([^*]+)\*\*/g);
+        if (refM && refM.length >= 2) {
+          var r1 = refM[0].replace(/\*\*/g,'').trim();
+          var r2 = refM[1].replace(/\*\*/g,'').trim();
+          if (!r1.toLowerCase().includes('bien d')) {
+            var newSubj = 'Pourquoi et comment VT Scan s\u00e9curise la s\u00e9lection d\u2019agences de ' + r1 + ', ' + r2 + '...';
+            brevoGenerated[i].subject = newSubj;
+            var sd = document.getElementById('brevo-subject-' + i);
+            if (sd) sd.textContent = newSubj;
+          }
+        }
+        // Update sector dropdown
+        if (secteur) {
+          brevoGenerated[i].detectedSector = secteur;
+          var sel = document.getElementById('sector-sel-' + i);
+          if (sel) {
+            for (var oi = 0; oi < sel.options.length; oi++) {
+              var ov = sel.options[oi].value.toLowerCase();
+              var sv = secteur.toLowerCase();
+              if (ov === sv || ov.includes(sv) || sv.includes(ov)) {
+                sel.selectedIndex = oi; break;
+              }
+            }
+          }
+        }
       })
       .catch(function(err){
         ab.disabled = false; ab.innerHTML = '✨ IA Références';
