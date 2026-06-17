@@ -3494,17 +3494,18 @@ function buildBrevoCard(msg, idx) {
       ab.disabled = true; ab.innerHTML = '⏳ IA en cours...';
       
       var prompt = "Tu es un expert en prospection commerciale B2B pour VT Scan, le 1er cabinet de conseil en s\u00e9lection d'agences en France.";
-      prompt += " Je prospecte " + (contact.prenom||'') + " " + (contact.nom||'') + " de " + (contact.entreprise||'') + " (secteur : " + sector + ").";
-      prompt += " R\u00e9f\u00e9rences clients par secteur : ";
-      Object.keys(REFS).forEach(function(k){ prompt += k + " : " + REFS[k].join(', ') + " | "; });
-      prompt += " Choisir les 3 \u00e0 5 r\u00e9f\u00e9rences les plus pertinentes (proximit\u00e9 sectorielle, enjeux similaires).";
-      prompt += " R\u00e9pondre UNIQUEMENT en JSON sur une ligne, rien d'autre, format : {\"phrase\":\"Nous avons travaill\u00e9 aux c\u00f4t\u00e9s d'annonceurs tels que **Ref1**, **Ref2**, **Ref3** (et **Ref4** si pertinent), **et bien d'autres**.\", \"secteur\":\"Nom exact du secteur parmi ceux list\u00e9s\"}";
+      prompt += " Utilise la recherche web pour comprendre le secteur d'activit\u00e9 de " + (contact.entreprise||'') + " et ses enjeux marketing/communication.";
+      prompt += " Ensuite, parmi nos r\u00e9f\u00e9rences clients suivantes, choisis les 3 \u00e0 5 les plus pertinentes :\n";
+      Object.keys(REFS).forEach(function(k){ prompt += k + " : " + REFS[k].join(', ') + "\n"; });
+      prompt += "\nR\u00e9ponds UNIQUEMENT avec ce JSON (une seule ligne, rien d'autre) :\n";
+      prompt += '{"phrase":"Nous avons travaill\u00e9 aux c\u00f4t\u00e9s d'annonceurs tels que **Ref1**, **Ref2**, **Ref3** (et **Ref4** si pertinent), **et bien d'autres**.","secteur":"Nom exact du secteur parmi ceux list\u00e9s ci-dessus"}';
       fetch("https://damp-wind-7811.achaaraoui.workers.dev/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           model: "claude-sonnet-4-6",
-          max_tokens: 200,
+          max_tokens: 1000,
+          tools: [{ type: "web_search_20250305", name: "web_search" }],
           messages: [{ role: "user", content: prompt }]
         })
       })
