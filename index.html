@@ -3419,7 +3419,26 @@ function buildBrevoCard(msg, idx) {
     ol.title = 'Reconnectez Microsoft 365'; ol.textContent = 'Outlook';
     ol.onclick = function(){ createOutlookDraft(); };
 
-    btns.appendChild(ce); btns.appendChild(cs); btns.appendChild(cb); btns.appendChild(gm); btns.appendChild(ol);
+    var del = document.createElement('button');
+    del.style.cssText = 'background:none;border:none;cursor:pointer;color:#fca5a5;font-size:16px;padding:2px 6px;margin-left:4px;line-height:1;';
+    del.title = 'Supprimer'; del.textContent = '\uD83D\uDDD1';
+    del.onclick = (function(i){ return function(){
+      var contact = brevoGenerated[i].contact;
+      var histIdx = prospects.findIndex(function(p){
+        return (contact.email && p.email && p.email.toLowerCase() === contact.email.toLowerCase()) ||
+               (contact.prenom && p.prenom && contact.nom && p.nom &&
+                p.prenom.toLowerCase() === contact.prenom.toLowerCase() &&
+                p.nom.toLowerCase() === contact.nom.toLowerCase());
+      });
+      if (histIdx >= 0) {
+        prospects.splice(histIdx, 1);
+        filteredProspects = [...prospects].sort(function(a,b){ return parseDate(b.date)-parseDate(a.date); });
+        saveToStorage(); updateStats(); updateHeaderCount();
+      }
+      brevoGenerated.splice(i, 1);
+      renderBrevoResults();
+    }; })(idx);
+    btns.appendChild(ce); btns.appendChild(cs); btns.appendChild(cb); btns.appendChild(gm); btns.appendChild(ol); btns.appendChild(del);
     header.appendChild(info); header.appendChild(btns);
 
     // Sector selector
