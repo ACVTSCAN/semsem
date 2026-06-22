@@ -622,6 +622,7 @@ tr:hover td { background: #fafbfc; }
         <div style="display:flex; gap:10px; align-items:center;">
           <span class="copy-feedback" id="copy-feedback">✓ Copié !</span>
           <button class="btn btn-secondary" onclick="copyMail()">Copier le corps</button>
+          <button onclick="aiRefsForSingle('mail')" style="background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;border:none;border-radius:6px;padding:6px 14px;font-size:12px;cursor:pointer;font-family:inherit;font-weight:500;" id="ai-btn-mail">✨ IA Références</button>
 
         </div>
       </div>
@@ -4512,7 +4513,7 @@ function importAllData(input) {
 function aiRefsForSingle(type) {
   var entreprise = (document.getElementById('mail-entreprise') || document.getElementById('li-entreprise') || {value:''}).value.trim();
   var secteur = (document.getElementById('mail-secteur') || document.getElementById('li-secteur') || {value:''}).value.trim();
-  if (!entreprise) { alert('Merci de renseigner l'entreprise d'abord.'); return; }
+  if (!entreprise) { alert('Merci de renseigner l\'entreprise d\'abord.'); return; }
   
   var btnId = 'ai-btn-' + type;
   var btn = document.getElementById(btnId);
