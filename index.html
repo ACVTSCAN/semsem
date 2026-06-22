@@ -4523,7 +4523,6 @@ function aiRefsForSingle(type) {
   prompt += " Je prospecte quelqu'un chez " + entreprise + (secteur ? " (secteur : " + secteur + ")" : "") + ".";
   prompt += " R\u00e9f\u00e9rences clients par secteur : ";
   Object.keys(REFS).forEach(function(k){ prompt += k + ' : ' + REFS[k].join(', ') + ' | '; });
-"; });
   prompt += "
 Réponds UNIQUEMENT avec ce JSON (une seule ligne) :
 ";
