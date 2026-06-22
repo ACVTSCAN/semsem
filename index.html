@@ -4611,10 +4611,11 @@ function generateWithAI(type) {
 }
 
 function aiRefsForSingle(type) {
-  var entreprise = (document.getElementById('mail-entreprise') || document.getElementById('li-entreprise') || {value:''}).value.trim();
-  var secteur = (document.getElementById('mail-secteur') || document.getElementById('li-secteur') || {value:''}).value.trim();
+  var entrepriseId = type === 'mail' ? 'entreprise' : type === 'courrier' ? 'c-entreprise' : 'li-entreprise';
+  var secteurId    = type === 'mail' ? 'secteur'    : type === 'courrier' ? 'c-secteur'    : 'li-secteur';
+  var entreprise = (document.getElementById(entrepriseId) || {value:''}).value.trim();
+  var secteur    = (document.getElementById(secteurId)    || {value:''}).value.trim();
   if (!entreprise) { alert('Merci de renseigner l\'entreprise d\'abord.'); return; }
-  secteur = ''; // Let AI decide the best sector
   
   var btnId = 'ai-btn-' + type;
   var btn = document.getElementById(btnId);
@@ -4659,12 +4660,12 @@ function aiRefsForSingle(type) {
     }
     // Update secteur dropdown if available
     if (secteurAI) {
-      var secSel = document.getElementById('mail-secteur') || document.getElementById('li-secteur');
+      var secSel = document.getElementById(secteurId);
       if (secSel) {
         for (var oi = 0; oi < secSel.options.length; oi++) {
           var ov = secSel.options[oi].value.toLowerCase();
           if (ov === secteurAI.toLowerCase() || ov.includes(secteurAI.toLowerCase()) || secteurAI.toLowerCase().includes(ov)) {
-            secSel.selectedIndex = oi; 
+            secSel.selectedIndex = oi;
             if (secSel.onchange) secSel.onchange();
             break;
           }
