@@ -751,6 +751,7 @@ tr:hover td { background: #fafbfc; }
         <h2 style="margin:0;">Courrier généré</h2>
         <div style="display:flex;gap:10px;align-items:center;">
           <span class="copy-feedback" id="courrier-feedback">✓ Exporté !</span>
+          <button onclick="aiRefsForSingle('courrier')" style="background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;border:none;border-radius:6px;padding:6px 14px;font-size:12px;cursor:pointer;font-family:inherit;font-weight:500;" id="ai-btn-courrier">✨ IA Références</button>
           <button class="btn btn-primary" onclick="exportCourrier()">Télécharger en Word</button>
         </div>
       </div>
@@ -942,6 +943,7 @@ tr:hover td { background: #fafbfc; }
         <h2 style="margin:0;">Message LinkedIn généré</h2>
         <div style="display:flex;gap:10px;align-items:center;">
           <span class="copy-feedback" id="li-copy-feedback">✓ Copié !</span>
+          <button onclick="aiRefsForSingle('linkedin')" style="background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;border:none;border-radius:6px;padding:6px 14px;font-size:12px;cursor:pointer;font-family:inherit;font-weight:500;" id="ai-btn-linkedin">✨ IA Références</button>
           <button class="btn btn-secondary" onclick="copyLinkedin()">Copier</button>
         </div>
       </div>
@@ -4505,6 +4507,85 @@ function importAllData(input) {
   };
   reader.onerror = function() { alert('Impossible de lire le fichier.'); };
   reader.readAsText(file, 'UTF-8');
+}
+
+function aiRefsForSingle(type) {
+  var entreprise = (document.getElementById('mail-entreprise') || document.getElementById('li-entreprise') || {value:''}).value.trim();
+  var secteur = (document.getElementById('mail-secteur') || document.getElementById('li-secteur') || {value:''}).value.trim();
+  if (!entreprise) { alert('Merci de renseigner l'entreprise d'abord.'); return; }
+  
+  var btnId = 'ai-btn-' + type;
+  var btn = document.getElementById(btnId);
+  if (btn) { btn.disabled = true; btn.innerHTML = '⏳ IA en cours...'; }
+
+  var prompt = "Tu es un expert en prospection commerciale B2B pour VT Scan, le 1er cabinet de conseil en sélection d'agences en France.";
+  prompt += " Je prospecte quelqu'un chez " + entreprise + (secteur ? " (secteur : " + secteur + ")" : "") + ".";
+  prompt += " Références clients par secteur :
+";
+  Object.keys(REFS).forEach(function(k){ prompt += k + " : " + REFS[k].join(', ') + "
+"; });
+  prompt += "
+Réponds UNIQUEMENT avec ce JSON (une seule ligne) :
+";
+  prompt += "{"phrase":"Nous avons travaillé aux côtés d'annonceurs tels que **Ref1**, **Ref2**, **Ref3** (et **Ref4** si pertinent), **et bien d'autres**.","secteur":"Nom exact du secteur"}";
+
+  fetch("https://damp-wind-7811.achaaraoui.workers.dev/", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ model: "claude-sonnet-4-6", max_tokens: 400, messages: [{ role: "user", content: prompt }] })
+  })
+  .then(function(r){ return r.json(); })
+  .then(function(data){
+    if (btn) { btn.disabled = false; btn.innerHTML = '✨ IA Références'; }
+    var rawText = '';
+    if (data.content) data.content.forEach(function(b){ if (b.type === 'text') rawText += b.text; });
+    if (!rawText) return;
+    var phrase = null, secteurAI = null;
+    try {
+      var clean = rawText.replace(/```json\s*/g,'').replace(/```/g,'').trim();
+      var s = clean.indexOf('{'), e = clean.lastIndexOf('}');
+      if (s !== -1 && e !== -1) {
+        var obj = JSON.parse(clean.substring(s, e+1));
+        phrase = obj.phrase; secteurAI = obj.secteur;
+      }
+    } catch(ex) { phrase = rawText.trim(); }
+    if (!phrase) return;
+    // Update the right output
+    var outputId = type === 'mail' ? 'mail-output' : type === 'courrier' ? 'courrier-output' : 'linkedin-output';
+    var outputEl = document.getElementById(outputId);
+    if (outputEl) {
+      var currentHTML = outputEl.innerHTML;
+      var newHTML = currentHTML.replace(
+        /Nous avons travaill[eé][^<
+]*/,
+        renderBold(phrase)
+      );
+      outputEl.innerHTML = newHTML;
+      if (outputEl.dataset) outputEl.dataset.body = (outputEl.dataset.body || '').replace(
+        /Nous avons travaill[eé][^
+]*/,
+        phrase
+      );
+    }
+    // Update secteur dropdown if available
+    if (secteurAI) {
+      var secSel = document.getElementById('mail-secteur') || document.getElementById('li-secteur');
+      if (secSel) {
+        for (var oi = 0; oi < secSel.options.length; oi++) {
+          var ov = secSel.options[oi].value.toLowerCase();
+          if (ov === secteurAI.toLowerCase() || ov.includes(secteurAI.toLowerCase()) || secteurAI.toLowerCase().includes(ov)) {
+            secSel.selectedIndex = oi; 
+            if (secSel.onchange) secSel.onchange();
+            break;
+          }
+        }
+      }
+    }
+  })
+  .catch(function(err){
+    if (btn) { btn.disabled = false; btn.innerHTML = '✨ IA Références'; }
+    alert('Erreur IA : ' + err.message);
+  });
 }
 
 function deleteTodayProspects() {
