@@ -1642,13 +1642,14 @@ function toTitleCase(str) {
   return (str || '').toLowerCase().replace(/(?:^|\s|-)\S/g, function(c){ return c.toUpperCase(); });
 }
 
-function generateCourrier() {
+function generateCourrier(forceSecteur) {
   var civ = document.getElementById('c-civilite').value;
   var prenom = toTitleCase(document.getElementById('c-prenom').value.trim());
   var nom = toTitleCase(document.getElementById('c-nom').value.trim());
   var poste = toTitleCase(document.getElementById('c-poste').value.trim());
   var entreprise = toTitleCase(document.getElementById('c-entreprise').value.trim());
-  var secteur = document.getElementById('c-secteur').value;
+  var secteur = forceSecteur || document.getElementById('c-secteur').value;
+  if (forceSecteur) { document.getElementById('c-secteur').value = forceSecteur; }
   var adresse1 = toTitleCase(document.getElementById('c-adresse1').value.trim());
   var adresse2 = toTitleCase(document.getElementById('c-adresse2').value.trim());
   var cp = document.getElementById('c-cp').value.trim();
@@ -2495,12 +2496,13 @@ function updateLinkedinRefs() {
   } else { preview.style.display = 'none'; }
 }
 
-function generateLinkedin() {
+function generateLinkedin(forceSecteur) {
   var prenom = document.getElementById('li-prenom').value.trim();
   var nom = document.getElementById('li-nom') ? document.getElementById('li-nom').value.trim() : '';
   var poste = document.getElementById('li-poste') ? document.getElementById('li-poste').value.trim() : '';
   var entreprise = document.getElementById('li-entreprise').value.trim();
-  var secteur = document.getElementById('li-secteur').value;
+  var secteur = forceSecteur || document.getElementById('li-secteur').value;
+  if (forceSecteur) { document.getElementById('li-secteur').value = forceSecteur; }
   var tplId = document.getElementById('li-template-select').value;
   var tpl = LINKEDIN_TEMPLATES.find(function(t){ return t.id === tplId; }) || LINKEDIN_TEMPLATES[0];
   if (!tpl) { alert('Aucun template LinkedIn disponible.'); return; }
@@ -4595,12 +4597,11 @@ function generateWithAI(type) {
 
     allBtns.forEach(function(b){ b.disabled = false; b.innerHTML = '✨ Générer avec IA'; });
 
-    // Small timeout to ensure DOM is updated with new sector value before generating
-    setTimeout(function() {
-      if (type === 'mail')     { generateMail();     setTimeout(function(){ aiRefsForSingle('mail');     }, 600); }
-      else if (type === 'courrier')  { generateCourrier();  setTimeout(function(){ aiRefsForSingle('courrier');  }, 600); }
-      else if (type === 'linkedin')  { generateLinkedin();  setTimeout(function(){ aiRefsForSingle('linkedin');  }, 600); }
-    }, 100);
+    // Pass detected sector directly — no DOM timing issue
+    var secteurToUse = (detectedSecteur && detectedSecteur.trim()) ? detectedSecteur.trim() : null;
+    if (type === 'mail')           { generateMail(secteurToUse);     setTimeout(function(){ aiRefsForSingle('mail');     }, 600); }
+    else if (type === 'courrier')  { generateCourrier(secteurToUse); setTimeout(function(){ aiRefsForSingle('courrier');  }, 600); }
+    else if (type === 'linkedin')  { generateLinkedin(secteurToUse); setTimeout(function(){ aiRefsForSingle('linkedin');  }, 600); }
   })
   .catch(function(err){
     allBtns.forEach(function(b){ b.disabled = false; b.innerHTML = '✨ Générer avec IA'; });
@@ -7085,12 +7086,13 @@ function showDuplicateBanner(bannerId, cardId, canal, existingProspect) {
   }
 }
 
-function generateMail() {
+function generateMail(forceSecteur) {
   const civ = document.getElementById('civilite').value;
   const prenom = document.getElementById('prenom').value.trim();
   const nom = document.getElementById('nom').value.trim();
   const entreprise = document.getElementById('entreprise').value.trim();
-  const secteur = document.getElementById('secteur').value;
+  const secteur = forceSecteur || document.getElementById('secteur').value;
+  if (forceSecteur) { document.getElementById('secteur').value = forceSecteur; }
   const poste = document.getElementById('poste').value.trim();
   const email = document.getElementById('email').value.trim();
   if (!prenom) { alert('Merci de renseigner au moins le prénom.'); return; }
