@@ -4523,9 +4523,7 @@ function aiRefsForSingle(type) {
   prompt += " Je prospecte quelqu'un chez " + entreprise + (secteur ? " (secteur : " + secteur + ")" : "") + ".";
   prompt += " R\u00e9f\u00e9rences clients par secteur : ";
   Object.keys(REFS).forEach(function(k){ prompt += k + ' : ' + REFS[k].join(', ') + ' | '; });
-  prompt += "
-Réponds UNIQUEMENT avec ce JSON (une seule ligne) :
-";
+  prompt += "\nR\u00e9ponds UNIQUEMENT avec ce JSON (une seule ligne) :";
   prompt += "{\"phrase\":\"Nous avons travaill\u00e9 aux c\u00f4t\u00e9s d'annonceurs tels que **Ref1**, **Ref2**, **Ref3** (et **Ref4** si pertinent), **et bien d'autres**.\",\"secteur\":\"Nom exact du secteur\"}";
 
   fetch("https://damp-wind-7811.achaaraoui.workers.dev/", {
