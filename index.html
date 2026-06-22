@@ -605,7 +605,7 @@ tr:hover td { background: #fafbfc; }
       </div>
       <div class="btn-row">
         <button class="btn btn-primary" onclick="generateMail()">Générer le mail</button>
-        <button onclick="generateMail(); setTimeout(function(){ aiRefsForSingle('mail'); }, 1500);" style="background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;border:none;border-radius:6px;padding:8px 16px;font-size:13px;cursor:pointer;font-family:inherit;font-weight:500;">✨ Générer avec IA</button>
+        <button data-ai-type="mail" onclick="generateWithAI('mail')" style="background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;border:none;border-radius:6px;padding:8px 16px;font-size:13px;cursor:pointer;font-family:inherit;font-weight:500;">✨ Générer avec IA</button>
         <button class="btn btn-secondary" onclick="resetForm()">Réinitialiser</button>
       </div>
       <div class="prompt-ia-bar">
@@ -737,7 +737,7 @@ tr:hover td { background: #fafbfc; }
       </div>
       <div class="btn-row">
         <button class="btn btn-primary" onclick="generateCourrier()">Générer le courrier</button>
-        <button onclick="generateCourrier(); setTimeout(function(){ aiRefsForSingle('courrier'); }, 1500);" style="background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;border:none;border-radius:6px;padding:8px 16px;font-size:13px;cursor:pointer;font-family:inherit;font-weight:500;">✨ Générer avec IA</button>
+        <button data-ai-type="courrier" onclick="generateWithAI('courrier')" style="background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;border:none;border-radius:6px;padding:8px 16px;font-size:13px;cursor:pointer;font-family:inherit;font-weight:500;">✨ Générer avec IA</button>
         <button class="btn btn-secondary" onclick="resetCourrier()">Réinitialiser</button>
       </div>
       <div class="prompt-ia-bar">
@@ -930,7 +930,7 @@ tr:hover td { background: #fafbfc; }
       </div>
       <div class="btn-row">
         <button class="btn btn-primary" onclick="generateLinkedin()">Générer le message</button>
-        <button onclick="generateLinkedin(); setTimeout(function(){ aiRefsForSingle('linkedin'); }, 1500);" style="background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;border:none;border-radius:6px;padding:8px 16px;font-size:13px;cursor:pointer;font-family:inherit;font-weight:500;">✨ Générer avec IA</button>
+        <button data-ai-type="linkedin" onclick="generateWithAI('linkedin')" style="background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;border:none;border-radius:6px;padding:8px 16px;font-size:13px;cursor:pointer;font-family:inherit;font-weight:500;">✨ Générer avec IA</button>
         <button class="btn btn-secondary" onclick="resetLinkedin()">Réinitialiser</button>
       </div>
       <div class="prompt-ia-bar">
@@ -4513,6 +4513,110 @@ function importAllData(input) {
   reader.readAsText(file, 'UTF-8');
 }
 
+function generateWithAI(type) {
+  // Get entreprise field based on type
+  var entrepriseId = type === 'mail' ? 'entreprise' : type === 'courrier' ? 'c-entreprise' : 'li-entreprise';
+  var secteurId = type === 'mail' ? 'secteur' : type === 'courrier' ? 'c-secteur' : 'li-secteur';
+  var entreprise = (document.getElementById(entrepriseId) || {value:''}).value.trim();
+  if (!entreprise) { alert('Merci de renseigner l\'entreprise d\'abord pour que l\'IA puisse détecter le secteur.'); return; }
+
+  // Check if prenom is filled (required for generation)
+  var prenomId = type === 'mail' ? 'prenom' : type === 'courrier' ? 'c-prenom' : 'li-prenom';
+  var prenom = (document.getElementById(prenomId) || {value:''}).value.trim();
+  if (!prenom) { alert('Merci de renseigner le prénom avant de générer avec l\'IA.'); return; }
+
+  // For courrier, check address fields too
+  if (type === 'courrier') {
+    var nom = (document.getElementById('c-nom') || {value:''}).value.trim();
+    var poste = (document.getElementById('c-poste') || {value:''}).value.trim();
+    var adresse1 = (document.getElementById('c-adresse1') || {value:''}).value.trim();
+    var cp = (document.getElementById('c-cp') || {value:''}).value.trim();
+    var ville = (document.getElementById('c-ville') || {value:''}).value.trim();
+    var manquants = [];
+    if (!nom) manquants.push('Nom');
+    if (!poste) manquants.push('Poste');
+    if (!adresse1) manquants.push('Adresse postale (ligne 1)');
+    if (!cp) manquants.push('Code postal');
+    if (!ville) manquants.push('Ville');
+    if (manquants.length > 0) { alert('Champs obligatoires manquants :\n- ' + manquants.join('\n- ')); return; }
+  }
+
+  // Show loading state on the button
+  var allBtns = document.querySelectorAll('[data-ai-type="' + type + '"]');
+  allBtns.forEach(function(b){ b.disabled = true; b.innerHTML = '⏳ Détection secteur...'; });
+
+  // Build sector list for the prompt
+  var secteurList = Object.keys(REFS).join(', ');
+
+  var prompt = 'Tu es un expert en marketing B2B français. Identifie le secteur d\'activité de l\'entreprise "' + entreprise + '".'
+    + ' Réponds UNIQUEMENT avec le JSON suivant (une seule ligne, sans markdown) : '
+    + '{"secteur":"NOM_EXACT_DU_SECTEUR"}'
+    + ' Le secteur doit être EXACTEMENT l\'un de ces choix : ' + secteurList + '.'
+    + ' Si tu n\'es pas sûr, choisis le secteur le plus proche.';
+
+  fetch('https://damp-wind-7811.achaaraoui.workers.dev/', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ model: 'claude-sonnet-4-6', max_tokens: 100, messages: [{ role: 'user', content: prompt }] })
+  })
+  .then(function(r){ return r.json(); })
+  .then(function(data){
+    var rawText = '';
+    if (data.content) data.content.forEach(function(b){ if (b.type === 'text') rawText += b.text; });
+    var detectedSecteur = null;
+    try {
+      var clean = rawText.replace(/```json\s*/g,'').replace(/```/g,'').trim();
+      var s = clean.indexOf('{'), e = clean.lastIndexOf('}');
+      if (s !== -1 && e !== -1) {
+        var obj = JSON.parse(clean.substring(s, e+1));
+        detectedSecteur = obj.secteur;
+      }
+    } catch(ex) {}
+
+    // Try to match detected sector to existing options
+    if (detectedSecteur) {
+      var secSel = document.getElementById(secteurId);
+      if (secSel) {
+        var matched = false;
+        for (var oi = 0; oi < secSel.options.length; oi++) {
+          var ov = secSel.options[oi].value;
+          if (ov.toLowerCase() === detectedSecteur.toLowerCase() || detectedSecteur.toLowerCase().includes(ov.toLowerCase()) || ov.toLowerCase().includes(detectedSecteur.toLowerCase())) {
+            secSel.selectedIndex = oi;
+            if (secSel.onchange) secSel.onchange();
+            matched = true;
+            break;
+          }
+        }
+        // If no match, try partial word match
+        if (!matched) {
+          var words = detectedSecteur.toLowerCase().split(/\s+/);
+          for (var oi2 = 0; oi2 < secSel.options.length; oi2++) {
+            var ov2 = secSel.options[oi2].value.toLowerCase();
+            if (words.some(function(w){ return w.length > 3 && ov2.includes(w); })) {
+              secSel.selectedIndex = oi2;
+              if (secSel.onchange) secSel.onchange();
+              break;
+            }
+          }
+        }
+      }
+    }
+
+    // Now generate the content
+    allBtns.forEach(function(b){ b.disabled = false; b.innerHTML = '✨ Générer avec IA'; });
+    if (type === 'mail') { generateMail(); setTimeout(function(){ aiRefsForSingle('mail'); }, 800); }
+    else if (type === 'courrier') { generateCourrier(); setTimeout(function(){ aiRefsForSingle('courrier'); }, 800); }
+    else if (type === 'linkedin') { generateLinkedin(); setTimeout(function(){ aiRefsForSingle('linkedin'); }, 800); }
+  })
+  .catch(function(err){
+    allBtns.forEach(function(b){ b.disabled = false; b.innerHTML = '✨ Générer avec IA'; });
+    // Fallback: generate without AI sector detection
+    if (type === 'mail') generateMail();
+    else if (type === 'courrier') generateCourrier();
+    else if (type === 'linkedin') generateLinkedin();
+  });
+}
+
 function aiRefsForSingle(type) {
   var entreprise = (document.getElementById('mail-entreprise') || document.getElementById('li-entreprise') || {value:''}).value.trim();
   var secteur = (document.getElementById('mail-secteur') || document.getElementById('li-secteur') || {value:''}).value.trim();
@@ -6995,7 +7099,7 @@ function generateMail() {
   const secteur = document.getElementById('secteur').value;
   const poste = document.getElementById('poste').value.trim();
   const email = document.getElementById('email').value.trim();
-  if (!prenom || !secteur) { alert('Merci de renseigner au moins le prénom et le secteur.'); return; }
+  if (!prenom) { alert('Merci de renseigner au moins le prénom.'); return; }
   const refKey = Object.keys(REFS).find(k => k === secteur) || Object.keys(REFS).find(k => k.toLowerCase().includes(secteur.toLowerCase()));
   const refs = refKey ? REFS[refKey] : ["Club Med","Voyage Privé","Pierre & Vacances","Lidl","Vinted","Midas","Burger King","Intersport","Sephora"];
   const refsStr = refs.slice(0, 6).join(", ") + (refs.length > 6 ? " et bien d'autres" : "");
