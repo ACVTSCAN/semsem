@@ -4655,9 +4655,11 @@ function aiRefsForSingle(type) {
     var outputEl = document.getElementById(outputId);
     if (outputEl) {
       var currentHTML = outputEl.innerHTML;
-      var newHTML = currentHTML.replace(/Nous avons travaill[e\u00e9][^<]*/,renderBold(phrase));
+      // Match the full "Nous avons travaillé..." sentence including any bold <strong> tags
+      var newHTML = currentHTML.replace(/Nous avons travaill[eé][^.]*(?:<[^>]+>[^<]*<\/[^>]+>[^.]*)*\./,renderBold(phrase));
+      // Fallback: if no match (e.g. template uses different phrasing), append nothing - keep original
       outputEl.innerHTML = newHTML;
-      if (outputEl.dataset) outputEl.dataset.body = (outputEl.dataset.body || '').replace(/Nous avons travaill[e\u00e9][^\n]*/, phrase);
+      if (outputEl.dataset) outputEl.dataset.body = (outputEl.dataset.body || '').replace(/Nous avons travaill[eé].+?(?:\n|$)/, phrase + '\n');
     }
     // Update secteur dropdown if available
     if (secteurAI) {
