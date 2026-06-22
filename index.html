@@ -4522,7 +4522,7 @@ function aiRefsForSingle(type) {
   var prompt = "Tu es un expert en prospection commerciale B2B pour VT Scan, le 1er cabinet de conseil en sélection d'agences en France.";
   prompt += " Je prospecte quelqu'un chez " + entreprise + (secteur ? " (secteur : " + secteur + ")" : "") + ".";
   prompt += " R\u00e9f\u00e9rences clients par secteur : ";
-  Object.keys(REFS).forEach(function(k){ prompt += k + " : " + REFS[k].join(', ') + "
+  Object.keys(REFS).forEach(function(k){ prompt += k + ' : ' + REFS[k].join(', ') + ' | '; });
 "; });
   prompt += "
 Réponds UNIQUEMENT avec ce JSON (une seule ligne) :
