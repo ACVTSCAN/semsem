@@ -4521,14 +4521,13 @@ function aiRefsForSingle(type) {
 
   var prompt = "Tu es un expert en prospection commerciale B2B pour VT Scan, le 1er cabinet de conseil en sélection d'agences en France.";
   prompt += " Je prospecte quelqu'un chez " + entreprise + (secteur ? " (secteur : " + secteur + ")" : "") + ".";
-  prompt += " Références clients par secteur :
-";
+  prompt += " R\u00e9f\u00e9rences clients par secteur : ";
   Object.keys(REFS).forEach(function(k){ prompt += k + " : " + REFS[k].join(', ') + "
 "; });
   prompt += "
 Réponds UNIQUEMENT avec ce JSON (une seule ligne) :
 ";
-  prompt += "{"phrase":"Nous avons travaillé aux côtés d'annonceurs tels que **Ref1**, **Ref2**, **Ref3** (et **Ref4** si pertinent), **et bien d'autres**.","secteur":"Nom exact du secteur"}";
+  prompt += "{\"phrase\":\"Nous avons travaill\u00e9 aux c\u00f4t\u00e9s d'annonceurs tels que **Ref1**, **Ref2**, **Ref3** (et **Ref4** si pertinent), **et bien d'autres**.\",\"secteur\":\"Nom exact du secteur\"}";
 
   fetch("https://damp-wind-7811.achaaraoui.workers.dev/", {
     method: "POST",
