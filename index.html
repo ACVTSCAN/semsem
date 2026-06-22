@@ -4552,9 +4552,7 @@ function aiRefsForSingle(type) {
     var outputEl = document.getElementById(outputId);
     if (outputEl) {
       var currentHTML = outputEl.innerHTML;
-      var newHTML = currentHTML.replace(
-        /Nous avons travaill[e\u00e9][^<]*/,
-        renderBold(phrase)
+      var newHTML = currentHTML.replace(/Nous avons travaill[e\u00e9][^<]*/,renderBold(phrase));
       outputEl.innerHTML = newHTML;
       if (outputEl.dataset) outputEl.dataset.body = (outputEl.dataset.body || '').replace(/Nous avons travaill[e\u00e9][^\n]*/, phrase);
       );
