@@ -4597,11 +4597,11 @@ function generateWithAI(type) {
 
     allBtns.forEach(function(b){ b.disabled = false; b.innerHTML = '✨ Générer avec IA'; });
 
-    // Pass detected sector directly — no DOM timing issue
+    // Pass detected sector directly — generate with correct refs, no second AI call needed
     var secteurToUse = (detectedSecteur && detectedSecteur.trim()) ? detectedSecteur.trim() : null;
-    if (type === 'mail')           { generateMail(secteurToUse);     setTimeout(function(){ aiRefsForSingle('mail');     }, 600); }
-    else if (type === 'courrier')  { generateCourrier(secteurToUse); setTimeout(function(){ aiRefsForSingle('courrier');  }, 600); }
-    else if (type === 'linkedin')  { generateLinkedin(secteurToUse); setTimeout(function(){ aiRefsForSingle('linkedin');  }, 600); }
+    if (type === 'mail')           { generateMail(secteurToUse); }
+    else if (type === 'courrier')  { generateCourrier(secteurToUse); }
+    else if (type === 'linkedin')  { generateLinkedin(secteurToUse); }
   })
   .catch(function(err){
     allBtns.forEach(function(b){ b.disabled = false; b.innerHTML = '✨ Générer avec IA'; });
