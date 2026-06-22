@@ -4517,6 +4517,7 @@ function aiRefsForSingle(type) {
   var entreprise = (document.getElementById('mail-entreprise') || document.getElementById('li-entreprise') || {value:''}).value.trim();
   var secteur = (document.getElementById('mail-secteur') || document.getElementById('li-secteur') || {value:''}).value.trim();
   if (!entreprise) { alert('Merci de renseigner l\'entreprise d\'abord.'); return; }
+  secteur = ''; // Let AI decide the best sector
   
   var btnId = 'ai-btn-' + type;
   var btn = document.getElementById(btnId);
