@@ -129,7 +129,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
   border-radius: var(--radius);
   padding: 20px 24px;
   margin-bottom: 20px;
-  box-shadow: var(--shadow);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.07), inset 0 1px 0 rgba(255,255,255,0.9);
 }
 .card h2 { font-size: 14px; font-weight: 600; margin-bottom: 16px; color: var(--text-primary); }
 
@@ -152,9 +152,10 @@ input, select, textarea {
   font-size: 13px;
   font-family: inherit;
   color: var(--text-primary);
-  background: #fff;
+  background: #fdfdfe;
   outline: none;
   transition: border-color 0.15s, box-shadow 0.15s;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.04);
 }
 input:focus, select:focus, textarea:focus {
   border-color: var(--green);
@@ -169,21 +170,54 @@ input:focus, select:focus, textarea:focus {
   cursor: pointer;
   border-radius: var(--radius-sm);
   font-family: inherit;
-  transition: all 0.15s;
+  transition: all 0.12s ease;
   border: none;
   display: inline-flex;
   align-items: center;
   gap: 6px;
+  position: relative;
 }
-.btn-primary { background: var(--text-primary); color: #fff; }
-.btn-primary:hover { background: #2d2d2d; }
-.btn-green { background: var(--green); color: #fff; }
-.btn-green:hover { background: var(--green-dark); }
-.btn-secondary { background: #fff; border: 1px solid var(--border); color: var(--text-primary); }
-.btn-secondary:hover { background: #f9fafb; }
-.btn-success { background: #166534; color: #fff; }
-.btn-danger { background: #dc2626; border: 1px solid #dc2626; color: #fff; font-size: 12px; padding: 5px 10px; }
-.btn-danger:hover { background: #b91c1c; border-color: #b91c1c; }
+.btn:active { transform: translateY(1px); }
+.btn-primary {
+  background: linear-gradient(180deg, #2d2d2d 0%, #1a1a2e 100%);
+  color: #fff;
+  box-shadow: 0 2px 0 rgba(0,0,0,0.35), 0 4px 10px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.1);
+  border: 1px solid rgba(0,0,0,0.3);
+}
+.btn-primary:hover { background: linear-gradient(180deg, #3a3a3a 0%, #242430 100%); box-shadow: 0 3px 0 rgba(0,0,0,0.35), 0 6px 14px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.12); }
+.btn-primary:active { box-shadow: 0 1px 0 rgba(0,0,0,0.35), 0 2px 6px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.08); }
+.btn-green {
+  background: linear-gradient(180deg, #22c55e 0%, #16a34a 100%);
+  color: #fff;
+  box-shadow: 0 2px 0 rgba(14,100,40,0.5), 0 4px 12px rgba(29,185,84,0.25), inset 0 1px 0 rgba(255,255,255,0.2);
+  border: 1px solid rgba(14,100,40,0.3);
+}
+.btn-green:hover { background: linear-gradient(180deg, #27d265 0%, #18b34f 100%); box-shadow: 0 3px 0 rgba(14,100,40,0.5), 0 6px 16px rgba(29,185,84,0.3), inset 0 1px 0 rgba(255,255,255,0.2); }
+.btn-green:active { box-shadow: 0 1px 0 rgba(14,100,40,0.4), 0 2px 6px rgba(29,185,84,0.15), inset 0 1px 0 rgba(255,255,255,0.15); }
+.btn-secondary {
+  background: linear-gradient(180deg, #ffffff 0%, #f3f4f6 100%);
+  border: 1px solid #d1d5db;
+  color: var(--text-primary);
+  box-shadow: 0 2px 0 rgba(0,0,0,0.08), 0 2px 6px rgba(0,0,0,0.06), inset 0 1px 0 #fff;
+}
+.btn-secondary:hover { background: linear-gradient(180deg, #f9fafb 0%, #eef0f2 100%); box-shadow: 0 3px 0 rgba(0,0,0,0.08), 0 4px 10px rgba(0,0,0,0.08), inset 0 1px 0 #fff; }
+.btn-secondary:active { box-shadow: 0 1px 0 rgba(0,0,0,0.07), inset 0 1px 0 #f0f0f0; }
+.btn-success {
+  background: linear-gradient(180deg, #1a7a40 0%, #145e30 100%);
+  color: #fff;
+  box-shadow: 0 2px 0 rgba(10,60,25,0.5), 0 4px 10px rgba(20,120,60,0.2), inset 0 1px 0 rgba(255,255,255,0.15);
+  border: 1px solid rgba(10,60,25,0.3);
+}
+.btn-danger {
+  background: linear-gradient(180deg, #ef4444 0%, #dc2626 100%);
+  border: 1px solid rgba(180,30,30,0.4);
+  color: #fff;
+  font-size: 12px;
+  padding: 5px 10px;
+  box-shadow: 0 2px 0 rgba(150,20,20,0.4), 0 3px 8px rgba(220,38,38,0.2), inset 0 1px 0 rgba(255,255,255,0.15);
+}
+.btn-danger:hover { background: linear-gradient(180deg, #f25252 0%, #e02828 100%); }
+.btn-danger:active { box-shadow: 0 1px 0 rgba(150,20,20,0.4), inset 0 1px 0 rgba(255,255,255,0.1); }
 .btn-row { display: flex; gap: 10px; align-items: center; margin-top: 16px; }
 
 /* BADGES & TAGS */
@@ -605,7 +639,7 @@ tr:hover td { background: #fafbfc; }
       </div>
       <div class="btn-row">
         <button class="btn btn-primary" onclick="generateMail()">Générer le mail</button>
-        <button data-ai-type="mail" onclick="generateWithAI('mail')" style="background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;border:none;border-radius:6px;padding:8px 16px;font-size:13px;cursor:pointer;font-family:inherit;font-weight:500;">✨ Générer avec IA</button>
+        <button data-ai-type="mail" onclick="generateWithAI('mail')" style="background:linear-gradient(180deg,#7c6ff7 0%,#6d28d9 100%);color:#fff;border:1px solid rgba(99,60,220,0.4);border-radius:6px;padding:8px 16px;font-size:13px;cursor:pointer;font-family:inherit;font-weight:600;box-shadow:0 2px 0 rgba(80,30,180,0.45),0 4px 12px rgba(109,40,217,0.25),inset 0 1px 0 rgba(255,255,255,0.18);transition:all 0.12s ease;">✨ Générer avec IA</button>
         <button class="btn btn-secondary" onclick="resetForm()">Réinitialiser</button>
       </div>
       <div class="prompt-ia-bar">
@@ -623,7 +657,7 @@ tr:hover td { background: #fafbfc; }
         <div style="display:flex; gap:10px; align-items:center;">
           <span class="copy-feedback" id="copy-feedback">✓ Copié !</span>
           <button class="btn btn-secondary" onclick="copyMail()">Copier le corps</button>
-          <button onclick="aiRefsForSingle('mail')" style="background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;border:none;border-radius:6px;padding:6px 14px;font-size:12px;cursor:pointer;font-family:inherit;font-weight:500;" id="ai-btn-mail">✨ IA Références</button>
+          <button onclick="aiRefsForSingle('mail')" style="background:linear-gradient(180deg,#7c6ff7 0%,#6d28d9 100%);color:#fff;border:1px solid rgba(99,60,220,0.4);border-radius:6px;padding:6px 14px;font-size:12px;cursor:pointer;font-family:inherit;font-weight:600;box-shadow:0 2px 0 rgba(80,30,180,0.45),0 4px 12px rgba(109,40,217,0.25),inset 0 1px 0 rgba(255,255,255,0.18);transition:all 0.12s ease;" id="ai-btn-mail">✨ IA Références</button>
 
         </div>
       </div>
@@ -737,7 +771,7 @@ tr:hover td { background: #fafbfc; }
       </div>
       <div class="btn-row">
         <button class="btn btn-primary" onclick="generateCourrier()">Générer le courrier</button>
-        <button data-ai-type="courrier" onclick="generateWithAI('courrier')" style="background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;border:none;border-radius:6px;padding:8px 16px;font-size:13px;cursor:pointer;font-family:inherit;font-weight:500;">✨ Générer avec IA</button>
+        <button data-ai-type="courrier" onclick="generateWithAI('courrier')" style="background:linear-gradient(180deg,#7c6ff7 0%,#6d28d9 100%);color:#fff;border:1px solid rgba(99,60,220,0.4);border-radius:6px;padding:8px 16px;font-size:13px;cursor:pointer;font-family:inherit;font-weight:600;box-shadow:0 2px 0 rgba(80,30,180,0.45),0 4px 12px rgba(109,40,217,0.25),inset 0 1px 0 rgba(255,255,255,0.18);transition:all 0.12s ease;">✨ Générer avec IA</button>
         <button class="btn btn-secondary" onclick="resetCourrier()">Réinitialiser</button>
       </div>
       <div class="prompt-ia-bar">
@@ -754,7 +788,7 @@ tr:hover td { background: #fafbfc; }
         <h2 style="margin:0;">Courrier généré</h2>
         <div style="display:flex;gap:10px;align-items:center;">
           <span class="copy-feedback" id="courrier-feedback">✓ Exporté !</span>
-          <button onclick="aiRefsForSingle('courrier')" style="background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;border:none;border-radius:6px;padding:6px 14px;font-size:12px;cursor:pointer;font-family:inherit;font-weight:500;" id="ai-btn-courrier">✨ IA Références</button>
+          <button onclick="aiRefsForSingle('courrier')" style="background:linear-gradient(180deg,#7c6ff7 0%,#6d28d9 100%);color:#fff;border:1px solid rgba(99,60,220,0.4);border-radius:6px;padding:6px 14px;font-size:12px;cursor:pointer;font-family:inherit;font-weight:600;box-shadow:0 2px 0 rgba(80,30,180,0.45),0 4px 12px rgba(109,40,217,0.25),inset 0 1px 0 rgba(255,255,255,0.18);transition:all 0.12s ease;" id="ai-btn-courrier">✨ IA Références</button>
           <button class="btn btn-primary" onclick="exportCourrier()">Télécharger en Word</button>
         </div>
       </div>
@@ -930,7 +964,7 @@ tr:hover td { background: #fafbfc; }
       </div>
       <div class="btn-row">
         <button class="btn btn-primary" onclick="generateLinkedin()">Générer le message</button>
-        <button data-ai-type="linkedin" onclick="generateWithAI('linkedin')" style="background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;border:none;border-radius:6px;padding:8px 16px;font-size:13px;cursor:pointer;font-family:inherit;font-weight:500;">✨ Générer avec IA</button>
+        <button data-ai-type="linkedin" onclick="generateWithAI('linkedin')" style="background:linear-gradient(180deg,#7c6ff7 0%,#6d28d9 100%);color:#fff;border:1px solid rgba(99,60,220,0.4);border-radius:6px;padding:8px 16px;font-size:13px;cursor:pointer;font-family:inherit;font-weight:600;box-shadow:0 2px 0 rgba(80,30,180,0.45),0 4px 12px rgba(109,40,217,0.25),inset 0 1px 0 rgba(255,255,255,0.18);transition:all 0.12s ease;">✨ Générer avec IA</button>
         <button class="btn btn-secondary" onclick="resetLinkedin()">Réinitialiser</button>
       </div>
       <div class="prompt-ia-bar">
@@ -947,7 +981,7 @@ tr:hover td { background: #fafbfc; }
         <h2 style="margin:0;">Message LinkedIn généré</h2>
         <div style="display:flex;gap:10px;align-items:center;">
           <span class="copy-feedback" id="li-copy-feedback">✓ Copié !</span>
-          <button onclick="aiRefsForSingle('linkedin')" style="background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;border:none;border-radius:6px;padding:6px 14px;font-size:12px;cursor:pointer;font-family:inherit;font-weight:500;" id="ai-btn-linkedin">✨ IA Références</button>
+          <button onclick="aiRefsForSingle('linkedin')" style="background:linear-gradient(180deg,#7c6ff7 0%,#6d28d9 100%);color:#fff;border:1px solid rgba(99,60,220,0.4);border-radius:6px;padding:6px 14px;font-size:12px;cursor:pointer;font-family:inherit;font-weight:600;box-shadow:0 2px 0 rgba(80,30,180,0.45),0 4px 12px rgba(109,40,217,0.25),inset 0 1px 0 rgba(255,255,255,0.18);transition:all 0.12s ease;" id="ai-btn-linkedin">✨ IA Références</button>
           <button class="btn btn-secondary" onclick="copyLinkedin()">Copier</button>
         </div>
       </div>
