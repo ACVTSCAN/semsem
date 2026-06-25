@@ -6839,9 +6839,47 @@ function closeTagsManager() {
 
 
 
+function importFromAndzup() {
+  var params = new URLSearchParams(window.location.search);
+  if (params.get('import') !== '1') return;
+
+  // Naviguer vers l'onglet Mail
+  showSection('mail');
+
+  // Remplir les champs
+  var fields = {
+    'civilite':  params.get('civilite') || 'Monsieur',
+    'prenom':    params.get('prenom')   || '',
+    'nom':       params.get('nom')      || '',
+    'entreprise': params.get('entreprise') || '',
+    'poste':     params.get('poste')    || '',
+    'email':     params.get('email')    || ''
+  };
+
+  Object.keys(fields).forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el && fields[id]) el.value = fields[id];
+  });
+
+  // Nettoyer l'URL sans recharger la page
+  window.history.replaceState({}, '', window.location.pathname);
+
+  // Notification visuelle
+  var banner = document.createElement('div');
+  banner.style.cssText = 'position:fixed;top:16px;right:16px;z-index:9999;background:#111827;color:#fff;padding:12px 18px;border-radius:10px;font-size:13px;font-weight:500;box-shadow:0 4px 20px rgba(0,0,0,0.2);display:flex;align-items:center;gap:8px;animation:slideIn 0.3s ease';
+  banner.innerHTML = '<span style="font-size:16px">✅</span> Contact importé depuis Andzup !';
+  document.body.appendChild(banner);
+  setTimeout(function() {
+    banner.style.opacity = '0';
+    banner.style.transition = 'opacity 0.4s';
+    setTimeout(function() { banner.remove(); }, 400);
+  }, 3000);
+}
+
 function init() {
   // Load custom refs if saved
   loadPipeline();
+  importFromAndzup();
   try {
     var savedPrompts = localStorage.getItem('vtscan_prompts');
     if (savedPrompts) PROMPT_LIBRARY = JSON.parse(savedPrompts);
