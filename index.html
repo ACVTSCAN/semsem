@@ -627,6 +627,7 @@ tr:hover td { background: #fafbfc; }
           <span class="copy-feedback" id="copy-feedback">✓ Copié !</span>
           <button class="btn btn-secondary" onclick="copyMail()">Copier le corps</button>
           <button onclick="spellCheck('mail')" style="background:#fff;border:1px solid #d1d5db;color:#374151;border-radius:6px;padding:6px 14px;font-size:12px;cursor:pointer;font-family:inherit;font-weight:500;" id="spell-btn-mail" title="Corriger l'orthographe">🔤 Corriger</button>
+          <button onclick="undoOutput('mail')" style="background:#fff;border:1px solid #d1d5db;color:#374151;border-radius:6px;padding:6px 14px;font-size:12px;cursor:pointer;font-family:inherit;font-weight:500;display:none;" id="undo-btn-mail" title="Revenir à la version précédente">↩ Annuler</button>
           <button onclick="aiRefsForSingle('mail')" style="background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;border:none;border-radius:6px;padding:6px 14px;font-size:12px;cursor:pointer;font-family:inherit;font-weight:500;" id="ai-btn-mail">✨ IA Références</button>
 
         </div>
@@ -7540,6 +7541,31 @@ init();
 </style>
 
 <script>
+// ── Undo history ─────────────────────────────────────────────
+var outputHistory = {};
+
+function saveHistory(type) {
+  var outputId = type === 'mail' ? 'mail-output' : type === 'courrier' ? 'courrier-output' : type === 'linkedin' ? 'li-output' : 'sms-output';
+  var el = document.getElementById(outputId);
+  if (!el) return;
+  outputHistory[type] = { html: el.innerHTML, plain: el.dataset.plain || '', body: el.dataset.body || '' };
+  var undoBtn = document.getElementById('undo-btn-' + type);
+  if (undoBtn) undoBtn.style.display = 'inline-flex';
+}
+
+function undoOutput(type) {
+  var outputId = type === 'mail' ? 'mail-output' : type === 'courrier' ? 'courrier-output' : type === 'linkedin' ? 'li-output' : 'sms-output';
+  var el = document.getElementById(outputId);
+  if (!el || !outputHistory[type]) return;
+  el.innerHTML = outputHistory[type].html;
+  el.dataset.plain = outputHistory[type].plain;
+  el.dataset.body = outputHistory[type].body;
+  delete outputHistory[type];
+  var undoBtn = document.getElementById('undo-btn-' + type);
+  if (undoBtn) undoBtn.style.display = 'none';
+  showSpellToast('↩ Version précédente restaurée', 'success');
+}
+
 // ── Spell Checker (LanguageTool) ──────────────────────────────
 async function spellCheck(type) {
   var outputId = type === 'mail' ? 'mail-output' : type === 'courrier' ? 'courrier-output' : type === 'linkedin' ? 'li-output' : 'sms-output';
@@ -7551,6 +7577,7 @@ async function spellCheck(type) {
   var text = el.innerText.trim();
   if (!text) return;
 
+  saveHistory(type);
   if (btn) { btn.disabled = true; btn.innerHTML = '⏳ Vérification...'; }
 
   try {
