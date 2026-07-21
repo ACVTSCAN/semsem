@@ -52,6 +52,74 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
   border-bottom: 1px solid var(--border);
   z-index: 200;
 }
+#login-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: linear-gradient(135deg, #0f2419, #1a3a2a);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+body:not(.authenticated) .sidebar,
+body:not(.authenticated) .main,
+body:not(.authenticated) .top-signature { display: none !important; }
+body.authenticated #login-overlay { display: none !important; }
+.login-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 40px 36px;
+  width: 360px;
+  max-width: 90vw;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  text-align: center;
+}
+.login-card h2 {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+.login-card .login-subtitle {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-bottom: 24px;
+}
+.login-card input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 14px;
+  margin-bottom: 12px;
+  box-sizing: border-box;
+}
+.login-card .login-error {
+  color: #e0453c;
+  font-size: 12px;
+  margin-bottom: 12px;
+  min-height: 16px;
+}
+.login-card button.login-submit {
+  width: 100%;
+  padding: 11px;
+  background: #28AC85;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-bottom: 14px;
+}
+.login-card .login-forgot {
+  font-size: 12px;
+  color: var(--text-secondary);
+  text-decoration: underline;
+  cursor: pointer;
+  background: none;
+  border: none;
+}
 .sidebar-logo {
   padding: 16px 10px 14px;
   border-bottom: 1px solid var(--border);
@@ -407,6 +475,18 @@ tr:hover td { background: #fafbfc; }
 </head>
 <body>
 
+<div id="login-overlay">
+  <div class="login-card">
+    <h2>André Chaaraoui / Créateur de Semsem</h2>
+    <div class="login-subtitle">Connexion à Semsem</div>
+    <input type="text" id="login-user" placeholder="Identifiant" autocomplete="username">
+    <input type="password" id="login-pass" placeholder="Mot de passe" autocomplete="current-password">
+    <div class="login-error" id="login-error"></div>
+    <button class="login-submit" onclick="attemptLogin()">Se connecter</button>
+    <button class="login-forgot" onclick="forgotPassword()">Mot de passe oublié ?</button>
+  </div>
+</div>
+
 <div class="top-signature">By André</div>
 <div class="sidebar">
   <div class="sidebar-logo" >
@@ -469,6 +549,7 @@ tr:hover td { background: #fafbfc; }
     <button onclick="exportAllData()" class="btn btn-secondary" style="width:100%;font-size:12px;padding:7px;margin-bottom:6px;">⬇️ Exporter mes données</button>
     <button onclick="document.getElementById('import-all-file').click()" class="btn btn-secondary" style="width:100%;font-size:12px;padding:7px;">⬆️ Importer mes données</button>
     <input type="file" id="import-all-file" accept=".json" onchange="importAllData(this)" style="display:none;">
+    <button onclick="logoutSemsem()" class="btn btn-secondary" style="width:100%;font-size:12px;padding:7px;margin-top:6px;color:#e0453c;">🔒 Se déconnecter</button>
   </div>
   </nav>
 </div>
@@ -7674,6 +7755,60 @@ function showSpellToast(msg, type) {
   setTimeout(() => t.style.opacity = '1', 10);
   setTimeout(() => { t.style.opacity = '0'; }, 3000);
 }
+</script>
+<script>
+(function() {
+  const AUTH_USER = "André";
+  const AUTH_PASS = "Bazouka 1999";
+  const RECOVERY_EMAIL = "andrechaaraoui1999@gmail.com";
+  const STORAGE_KEY = "semsem_auth";
+
+  function checkSession() {
+    if (localStorage.getItem(STORAGE_KEY) === "granted") {
+      document.body.classList.add("authenticated");
+    }
+  }
+
+  window.attemptLogin = function() {
+    const user = document.getElementById("login-user").value.trim();
+    const pass = document.getElementById("login-pass").value;
+    const errorEl = document.getElementById("login-error");
+    if (user === AUTH_USER && pass === AUTH_PASS) {
+      localStorage.setItem(STORAGE_KEY, "granted");
+      document.body.classList.add("authenticated");
+      errorEl.textContent = "";
+    } else {
+      errorEl.textContent = "Identifiant ou mot de passe incorrect.";
+    }
+  };
+
+  window.forgotPassword = function() {
+    const subject = encodeURIComponent("Semsem - Demande de récupération de mot de passe");
+    const body = encodeURIComponent("Bonjour,\n\nJ'ai oublié mon mot de passe pour accéder à Semsem, pouvez-vous me le renvoyer ?\n\nMerci.");
+    window.location.href = "mailto:" + RECOVERY_EMAIL + "?subject=" + subject + "&body=" + body;
+  };
+
+  window.logoutSemsem = function() {
+    localStorage.removeItem(STORAGE_KEY);
+    document.body.classList.remove("authenticated");
+  };
+
+  document.addEventListener("DOMContentLoaded", function() {
+    checkSession();
+    const passInput = document.getElementById("login-pass");
+    if (passInput) {
+      passInput.addEventListener("keydown", function(e) {
+        if (e.key === "Enter") attemptLogin();
+      });
+    }
+    const userInput = document.getElementById("login-user");
+    if (userInput) {
+      userInput.addEventListener("keydown", function(e) {
+        if (e.key === "Enter") attemptLogin();
+      });
+    }
+  });
+})();
 </script>
 </body>
 </html>
