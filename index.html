@@ -7771,9 +7771,9 @@ function showSpellToast(msg, type) {
 
   window.attemptLogin = function() {
     const user = document.getElementById("login-user").value.trim();
-    const pass = document.getElementById("login-pass").value;
+    const pass = document.getElementById("login-pass").value.trim();
     const errorEl = document.getElementById("login-error");
-    if (user === AUTH_USER && pass === AUTH_PASS) {
+    if (user.toLowerCase() === AUTH_USER.toLowerCase() && pass === AUTH_PASS) {
       localStorage.setItem(STORAGE_KEY, "granted");
       document.body.classList.add("authenticated");
       errorEl.textContent = "";
