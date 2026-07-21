@@ -7585,39 +7585,62 @@ async function spellCheck(type) {
   if (!text) return;
 
   saveOutputHistory(type);
-  if (btn) { btn.disabled = true; btn.innerHTML = '⏳ Vérification...'; }
+  if (btn) { btn.disabled = true; btn.innerHTML = '⏳ Correction...'; }
+
+  var prompt = 'Tu es un correcteur orthographique et grammatical expert en français.'
+    + ' Corrige UNIQUEMENT les fautes d\'orthographe et de grammaire dans le texte suivant.'
+    + ' RÈGLES ABSOLUES à respecter :'
+    + ' 1. Ne jamais modifier les noms propres, marques, entreprises (VT Scan, Bjorg, Florette, Danone, Lactalis, Bjorg, St Hubert, Groupe Bel, François, Fabrice, André, etc.)'
+    + ' 2. Ne jamais modifier les sigles et acronymes (CRM, RP, VT Modl, etc.)'
+    + ' 3. Ne jamais reformuler ou changer le sens des phrases'
+    + ' 4. Ne jamais ajouter ou supprimer des virgules si ce n\'est pas une faute évidente'
+    + ' 5. Retourner UNIQUEMENT le texte corrigé, sans commentaire, sans explication, sans guillemets'
+    + '\n\nTexte à corriger :\n' + text;
 
   try {
-    var resp = await fetch('https://api.languagetool.org/v2/check', {
+    var resp = await fetch('https://damp-wind-7811.achaaraoui.workers.dev/', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: new URLSearchParams({ text: text, language: 'fr-FR' })
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 2000,
+        messages: [{ role: 'user', content: prompt }]
+      })
     });
     var data = await resp.json();
-    var matches = data.matches || [];
+    var corrected = '';
+    if (data.content) data.content.forEach(function(b) { if (b.type === 'text') corrected += b.text; });
+    corrected = corrected.trim();
 
-    if (matches.length === 0) {
+    if (!corrected) {
+      showSpellToast('❌ Erreur de correction', 'error');
+    } else if (corrected === text) {
       showSpellToast('✅ Aucune faute détectée !', 'success');
     } else {
-      // Apply corrections directly
-      var corrected = text;
-      // Apply from end to start to preserve offsets
-      var sorted = matches.slice().sort((a,b) => b.offset - a.offset);
-      for (var m of sorted) {
-        if (m.replacements && m.replacements.length > 0) {
-          var before = corrected.substring(0, m.offset);
-          var after = corrected.substring(m.offset + m.length);
-          corrected = before + m.replacements[0].value + after;
-        }
-      }
-      // Update the output
-      var html = el.innerHTML;
-      // Re-render with corrected text preserving bold
-      el.innerText = corrected;
-      showSpellToast('✅ ' + matches.length + ' correction(s) appliquée(s)', 'success');
+      // Preserve bold formatting
+      var boldMap = [];
+      var htmlContent = el.innerHTML;
+      var boldMatches = htmlContent.match(/<strong>[^<]+<\/strong>/g) || [];
+      boldMatches.forEach(function(b) {
+        var plain = b.replace(/<\/?strong>/g, '');
+        boldMap.push({ plain: plain, html: b });
+      });
+
+      // Apply corrected text
+      var correctedHtml = corrected.replace(/\n/g, '<br>');
+      // Re-apply bold where text matches
+      boldMap.forEach(function(b) {
+        // Find the corrected version of the bold text (may have minor fixes)
+        correctedHtml = correctedHtml.replace(b.plain, b.html);
+      });
+
+      el.innerHTML = correctedHtml;
+      el.dataset.plain = corrected;
+      el.dataset.body = corrected;
+      showSpellToast('✅ Texte corrigé par Claude', 'success');
     }
   } catch(e) {
-    showSpellToast('❌ Erreur de connexion au correcteur', 'error');
+    showSpellToast('❌ Erreur de connexion', 'error');
   }
 
   if (btn) { btn.disabled = false; btn.innerHTML = '🔤 Corriger'; }
