@@ -4659,7 +4659,8 @@ function aiRefsForSingle(type) {
     var outputId = type === 'mail' ? 'mail-output' : type === 'courrier' ? 'courrier-output' : 'linkedin-output';
     var outputEl = document.getElementById(outputId);
     if (outputEl) {
-      var currentHTML = outputEl.innerHTML;
+      saveOutputHistory(type);
+    var currentHTML = outputEl.innerHTML;
       // Match the full "Nous avons travaillé..." sentence including any bold <strong> tags
       var newHTML = currentHTML.replace(/Nous avons travaill[eé][^.]*(?:<[^>]+>[^<]*<\/[^>]+>[^.]*)*\./,renderBold(phrase));
       // Fallback: if no match (e.g. template uses different phrasing), append nothing - keep original
@@ -7157,6 +7158,7 @@ function generateMail(forceSecteur) {
   currentMail = { prenom, nom, entreprise, secteur, poste, email };
   // Render with bold for display, store plain for copy
   const mailHtml = mail.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>');
+  saveOutputHistory('mail');
   document.getElementById('mail-output').innerHTML = mailHtml;
   document.getElementById('mail-output').dataset.plain = mail.replace(/\*\*/g, '');
   document.getElementById('mail-output').dataset.body = mail.replace(/\u00a0/g,' ').replace(/&nbsp;/g,' ');
@@ -7544,25 +7546,30 @@ init();
 // ── Undo history ─────────────────────────────────────────────
 var outputHistory = {};
 
-function saveHistory(type) {
-  var outputId = type === 'mail' ? 'mail-output' : type === 'courrier' ? 'courrier-output' : type === 'linkedin' ? 'li-output' : 'sms-output';
-  var el = document.getElementById(outputId);
-  if (!el) return;
-  outputHistory[type] = { html: el.innerHTML, plain: el.dataset.plain || '', body: el.dataset.body || '' };
+function outputIdFor(type) {
+  return type === 'mail' ? 'mail-output' : type === 'courrier' ? 'courrier-output' : type === 'linkedin' ? 'li-output' : 'sms-output';
+}
+
+function saveOutputHistory(type) {
+  var el = document.getElementById(outputIdFor(type));
+  if (!el || !el.innerHTML.trim()) return;
+  if (!outputHistory[type]) outputHistory[type] = [];
+  outputHistory[type].push({ html: el.innerHTML, plain: el.dataset.plain || '', body: el.dataset.body || '' });
+  // Keep max 10 steps
+  if (outputHistory[type].length > 10) outputHistory[type].shift();
   var undoBtn = document.getElementById('undo-btn-' + type);
   if (undoBtn) undoBtn.style.display = 'inline-flex';
 }
 
 function undoOutput(type) {
-  var outputId = type === 'mail' ? 'mail-output' : type === 'courrier' ? 'courrier-output' : type === 'linkedin' ? 'li-output' : 'sms-output';
-  var el = document.getElementById(outputId);
-  if (!el || !outputHistory[type]) return;
-  el.innerHTML = outputHistory[type].html;
-  el.dataset.plain = outputHistory[type].plain;
-  el.dataset.body = outputHistory[type].body;
-  delete outputHistory[type];
+  var el = document.getElementById(outputIdFor(type));
+  if (!el || !outputHistory[type] || outputHistory[type].length === 0) return;
+  var prev = outputHistory[type].pop();
+  el.innerHTML = prev.html;
+  el.dataset.plain = prev.plain;
+  el.dataset.body = prev.body;
   var undoBtn = document.getElementById('undo-btn-' + type);
-  if (undoBtn) undoBtn.style.display = 'none';
+  if (undoBtn && outputHistory[type].length === 0) undoBtn.style.display = 'none';
   showSpellToast('↩ Version précédente restaurée', 'success');
 }
 
@@ -7577,7 +7584,7 @@ async function spellCheck(type) {
   var text = el.innerText.trim();
   if (!text) return;
 
-  saveHistory(type);
+  saveOutputHistory(type);
   if (btn) { btn.disabled = true; btn.innerHTML = '⏳ Vérification...'; }
 
   try {
