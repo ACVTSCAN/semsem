@@ -6933,8 +6933,7 @@ function doLogin() {
   var err = document.getElementById('login-error');
   if (pwd === VALID_PWD) {
     localStorage.setItem(SESSION_KEY, 'ok');
-    document.getElementById('login-screen').classList.add('hidden');
-    err.style.display = 'none';
+    location.reload();
   } else {
     err.style.display = 'block';
     document.getElementById('login-pwd').value = '';
