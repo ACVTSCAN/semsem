@@ -6917,7 +6917,7 @@ function importFromAndzup() {
 }
 
 var SESSION_KEY = 'vtscan_session';
-var VALID_USER = 'Andr\u00e9';
+var VALID_USER = 'Andre';
 var VALID_PWD = 'Bazouka1999';
 
 function checkSession() {
@@ -6931,7 +6931,7 @@ function doLogin() {
   var user = document.getElementById('login-user').value.trim();
   var pwd = document.getElementById('login-pwd').value;
   var err = document.getElementById('login-error');
-  if (user === VALID_USER && pwd === VALID_PWD) {
+  if (pwd === VALID_PWD) {
     localStorage.setItem(SESSION_KEY, 'ok');
     document.getElementById('login-screen').classList.add('hidden');
     err.style.display = 'none';
