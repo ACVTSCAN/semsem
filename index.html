@@ -464,8 +464,8 @@ tr:hover td { background: #fafbfc; }
       Bibliothèque de prompts
     </button>
   <div style="padding:12px 16px;border-top:1px solid var(--border);margin-top:8px;">
-    <button onclick="exportAllData()" class="btn btn-secondary" style="width:100%;font-size:12px;padding:7px;margin-bottom:6px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#28AC85" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline;vertical-align:middle;margin-right:6px;"><path d="M12 3v13M7 11l5 5 5-5"/><path d="M4 20h16"/></svg>Exporter mes données</button>
-    <button onclick="document.getElementById('import-all-file').click()" class="btn btn-secondary" style="width:100%;font-size:12px;padding:7px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#28AC85" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline;vertical-align:middle;margin-right:6px;"><path d="M12 21V8M7 13l5-5 5 5"/><path d="M4 4h16"/></svg>Importer mes données</button>
+    <button onclick="exportAllData()" style="width:100%;font-size:11px;font-weight:700;padding:5px 10px;margin-bottom:5px;background:#fff;border:1.5px solid #28AC85;border-radius:6px;color:#28AC85;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:6px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#28AC85" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>Exporter</button>
+    <button onclick="document.getElementById('import-all-file').click()" style="width:100%;font-size:11px;font-weight:700;padding:5px 10px;background:#fff;border:1.5px solid #28AC85;border-radius:6px;color:#28AC85;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:6px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#28AC85" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>Importer</button>
     <input type="file" id="import-all-file" accept=".json" onchange="importAllData(this)" style="display:none;">
   </div>
   </nav>
