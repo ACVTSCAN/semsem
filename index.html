@@ -6921,7 +6921,7 @@ var VALID_USER = 'André';
 var VALID_PWD = 'Bazouka1999';
 
 function checkSession() {
-  var s = sessionStorage.getItem(SESSION_KEY);
+  var s = localStorage.getItem(SESSION_KEY);
   if (s === 'ok') {
     document.getElementById('login-screen').classList.add('hidden');
   }
@@ -6932,7 +6932,7 @@ function doLogin() {
   var pwd = document.getElementById('login-pwd').value;
   var err = document.getElementById('login-error');
   if (user === VALID_USER && pwd === VALID_PWD) {
-    sessionStorage.setItem(SESSION_KEY, 'ok');
+    localStorage.setItem(SESSION_KEY, 'ok');
     document.getElementById('login-screen').classList.add('hidden');
     err.style.display = 'none';
   } else {
@@ -6943,7 +6943,7 @@ function doLogin() {
 }
 
 function doLogout() {
-  sessionStorage.removeItem(SESSION_KEY);
+  localStorage.removeItem(SESSION_KEY); location.reload();
   document.getElementById('login-screen').classList.remove('hidden');
   document.getElementById('login-user').value = '';
   document.getElementById('login-pwd').value = '';
