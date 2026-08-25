@@ -165,6 +165,25 @@ input:focus, select:focus, textarea:focus {
   box-shadow: 0 0 0 3px rgba(6,214,160,0.1);
 }
 
+/* MODERN DROPDOWNS — custom chevron, no native browser styling */
+select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%2393A5A1' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 16px;
+  padding-right: 34px;
+  cursor: pointer;
+}
+select:hover {
+  border-color: #B9D6CF;
+}
+select:focus {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23049C82' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+}
+
 /* BUTTONS */
 .btn {
   padding: 9px 18px;
@@ -295,6 +314,7 @@ tr:hover td { background: #fafbfc; }
 .card-modal h3 { font-size: 15px; font-weight: 600; margin-bottom: 16px; }
 .card-modal label { font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; display: block; margin-bottom: 5px; margin-top: 12px; }
 .card-modal input, .card-modal textarea, .card-modal select { width: 100%; font-size: 13px; font-family: inherit; padding: 8px 10px; border: 1px solid var(--border); border-radius: var(--radius-sm); outline: none; }
+.card-modal select { padding-right: 34px; cursor: pointer; }
 .card-modal textarea { resize: vertical; min-height: 80px; }
 .color-swatches { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px; }
 .color-swatch { width: 24px; height: 24px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; }
